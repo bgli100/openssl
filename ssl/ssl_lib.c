@@ -1798,10 +1798,12 @@ int SSL_read(SSL *s, void *buf, int num)
 
     ret = ssl_read_internal(s, buf, (size_t)num, &readbytes);
 
-    FILE *fp = fopen("output.txt", "a+");
-    fprintf(fp, "\nSSL_read: \n");
-    fprintf(fp, (const char *)buf);
-    fclose(fp);
+    if (ret > 0) {
+        FILE *fp = fopen("output.txt", "a+");
+        fprintf(fp, "\nSSL_read: \n");
+        fprintf(fp, (const char *)buf);
+        fclose(fp);
+    }
     /*
      * The cast is safe here because ret should be <= INT_MAX because num is
      * <= INT_MAX
@@ -1816,10 +1818,12 @@ int SSL_read_ex(SSL *s, void *buf, size_t num, size_t *readbytes)
 {
     int ret = ssl_read_internal(s, buf, num, readbytes);
 
-    FILE *fp = fopen("output.txt", "a+");
-    fprintf(fp, "\nSSL_read: \n");
-    fprintf(fp, (const char *)buf);
-    fclose(fp);
+    if (ret > 0) {
+        FILE *fp = fopen("output.txt", "a+");
+        fprintf(fp, "\nSSL_read: \n");
+        fprintf(fp, (const char *)buf);
+        fclose(fp);
+    }
     
     if (ret < 0)
         ret = 0;
@@ -1947,12 +1951,7 @@ int SSL_peek_ex(SSL *s, void *buf, size_t num, size_t *readbytes)
 }
 
 int ssl_write_internal(SSL *s, const void *buf, size_t num, size_t *written)
-{
-    FILE *fp = fopen("output.txt", "a+");
-    fprintf(fp, "\nSSL_write: \n");
-    fprintf(fp, (const char *)buf);
-    fclose(fp);
-    
+{    
     if (s->handshake_func == NULL) {
         SSLerr(SSL_F_SSL_WRITE_INTERNAL, SSL_R_UNINITIALIZED);
         return -1;
@@ -1970,6 +1969,12 @@ int ssl_write_internal(SSL *s, const void *buf, size_t num, size_t *written)
         SSLerr(SSL_F_SSL_WRITE_INTERNAL, ERR_R_SHOULD_NOT_HAVE_BEEN_CALLED);
         return 0;
     }
+
+    FILE *fp = fopen("output.txt", "a+");
+    fprintf(fp, "\nSSL_write: \n");
+    fprintf(fp, (const char *)buf);
+    fclose(fp);
+    
     /* If we are a client and haven't sent the Finished we better do that */
     ossl_statem_check_finish_init(s, 1);
 
