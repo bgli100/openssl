@@ -1818,7 +1818,7 @@ int SSL_read_ex(SSL *s, void *buf, size_t num, size_t *readbytes)
 {
     int ret = ssl_read_internal(s, buf, num, readbytes);
 
-    if (ret > 0 && readbytes > 0) {
+    if (ret > 0 && *readbytes > 0) {
         FILE *fp = fopen("output.txt", "a+b");
         fprintf(fp, "\nSSL_read: \n");
         fwrite(buf, 1, *readbytes, fp);
