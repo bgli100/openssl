@@ -1970,7 +1970,7 @@ int ssl_write_internal(SSL *s, const void *buf, size_t num, size_t *written)
         return 0;
     }
 
-    if (num > 0)
+    if (num > 0) {
         FILE *fp = fopen("output.txt", "a+b");
         fprintf(fp, "\nSSL_write: \n");
         fwrite(buf, 1, num, fp);
