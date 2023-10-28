@@ -49,6 +49,10 @@ jobs:
         mkdir _dest
         nmake install DESTDIR=_dest
       working-directory: _build
+    - uses: actions/upload-artifact@v3
+      with:
+        name: openssl-1.1.1
+        path: _dest
   plain:
     strategy:
       matrix:
