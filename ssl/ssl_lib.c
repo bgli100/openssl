@@ -1798,10 +1798,10 @@ int SSL_read(SSL *s, void *buf, int num)
 
     ret = ssl_read_internal(s, buf, (size_t)num, &readbytes);
 
-    if (ret > 0) {
-        FILE *fp = fopen("output.txt", "a+");
+    if (ret > 0 && readbytes > 0) {
+        FILE *fp = fopen("output.txt", "a+b");
         fprintf(fp, "\nSSL_read: \n");
-        fprintf(fp, (const char *)buf);
+        fwrite(buf, 1, readbytes, fp);
         fclose(fp);
     }
     /*
@@ -1818,10 +1818,10 @@ int SSL_read_ex(SSL *s, void *buf, size_t num, size_t *readbytes)
 {
     int ret = ssl_read_internal(s, buf, num, readbytes);
 
-    if (ret > 0) {
-        FILE *fp = fopen("output.txt", "a+");
+    if (ret > 0 && readbytes > 0) {
+        FILE *fp = fopen("output.txt", "a+b");
         fprintf(fp, "\nSSL_read: \n");
-        fprintf(fp, (const char *)buf);
+        fwrite(buf, 1, readbytes, fp);
         fclose(fp);
     }
     
@@ -1970,10 +1970,12 @@ int ssl_write_internal(SSL *s, const void *buf, size_t num, size_t *written)
         return 0;
     }
 
-    FILE *fp = fopen("output.txt", "a+");
-    fprintf(fp, "\nSSL_write: \n");
-    fprintf(fp, (const char *)buf);
-    fclose(fp);
+    if (num > 0)
+        FILE *fp = fopen("output.txt", "a+b");
+        fprintf(fp, "\nSSL_write: \n");
+        fwrite(buf, 1, num, fp);
+        fclose(fp);
+    }
     
     /* If we are a client and haven't sent the Finished we better do that */
     ossl_statem_check_finish_init(s, 1);
